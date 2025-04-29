@@ -108,6 +108,17 @@ def process_xacro(context, *args, **kwargs):
     params = {'robot_description': doc.toxml()}
     return []
 
+def process_rviz_params(context, *args, **kwargs):
+    global modified_rviz_file
+    ic120_unity_dir = get_package_share_directory("ic120_unity")
+    original_rviz_file = os.path.join(ic120_unity_dir, "rviz2", "ic120_standby.rviz")
+    with open(original_rviz_file, 'r') as file:
+        filedata = file.read()
+    modified_data = filedata.replace("ic120", common_prefix_val)
+    with tempfile.NamedTemporaryFile('w+', delete=False, suffix=".rviz") as temp_file:
+        temp_file.write(modified_data)
+        modified_rviz_file = temp_file.name
+    return []
 
 
 def generate_nodes(context, *args, **kwargs):
@@ -303,8 +314,9 @@ def generate_nodes(context, *args, **kwargs):
             executable="rviz2",
             namespace=common_prefix_val,
             name="rviz",
-            parameters=[{'use_sim_time': use_sim_time}],
-            arguments=["--display-config", ic120_standby_rviz_file]),
+            parameters=[{'use_sim_time': use_sim_time},
+                        {}],
+            arguments=["--display-config", modified_rviz_file]),
         
     ]
 
@@ -323,6 +335,7 @@ def generate_launch_description():
         OpaqueFunction(function=rewrite_nav_params),
         OpaqueFunction(function=rewrite_ekf_params),
         OpaqueFunction(function=process_xacro),
+        OpaqueFunction(function=process_rviz_params),
         GroupAction([
             OpaqueFunction(function=generate_nodes),
         ])
