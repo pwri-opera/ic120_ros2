@@ -24,8 +24,6 @@ OPERA対応クローラダンプIC120の土木研究所公開ROS2パッケージ
   $ colcon build && source install/setup.bash
   ```
 
-## kakaaaaaa
-
 ## 含有するサブパッケージ
 ### ic120_bringup:
 - ic120の実機を動作させる際に必要なノード群を一括起動するためのlaunch用のサブパッケージ
