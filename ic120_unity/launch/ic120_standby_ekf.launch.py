@@ -96,7 +96,7 @@ def rewrite_ekf_params(context, **kwargs):
 def process_xacro(context, *args, **kwargs):
     global params
     ic120_description_dir = get_package_share_directory("ic120_description")
-    ic120_xacro_file = os.path.join(ic120_description_dir, "urdf", "ic120.xacro")
+    ic120_xacro_file = os.path.join(ic120_description_dir, "urdf", "ic120_sim.xacro")
     with open(ic120_xacro_file, 'r') as file:
         filedata = file.read()
     filedata = filedata.replace('<xacro:property name="tf_prefix" value="ic120_tf"/>', f'<xacro:property name="tf_prefix" value="{tf_prefix_val}"/>')
