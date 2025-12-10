@@ -312,7 +312,7 @@ def generate_nodes(context, *args, **kwargs):
 def generate_launch_description():
     common_prefix = LaunchConfiguration('common_prefix')
     use_rviz = LaunchConfiguration('use_rviz')
-    common_prefix_arg = DeclareLaunchArgument('common_prefix',default_value='ic120')
+    common_prefix_arg = DeclareLaunchArgument('common_prefix',default_value='ic120_0')
     use_rviz_arg = DeclareLaunchArgument('use_rviz', default_value='true')
 
     return LaunchDescription([
