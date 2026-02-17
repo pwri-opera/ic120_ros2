@@ -1,0 +1,16 @@
+<root BTCPP_format="4" main_tree_to_execute="MainTree">
+  <BehaviorTree ID="MainTree">
+    <Sequence name="NavigateOnce">
+      <ComputePathToPose goal="{goal}" path="{path}" planner_id="GridBased"/>
+
+      <RecoveryNode number_of_retries="3" name="FollowPathRecovery">
+        <FollowPath path="{path}" controller_id="FollowPath"/>
+
+        <!-- Recovery（例：ローカルcostmapクリア） -->
+        <ClearEntireCostmap name="ClearLocalCostmap"
+          service_name="local_costmap/clear_entirely_local_costmap"/>
+      </RecoveryNode>
+
+    </Sequence>
+  </BehaviorTree>
+</root>
