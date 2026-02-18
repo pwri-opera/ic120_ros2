@@ -50,8 +50,8 @@ bt_navigator:
     use_sim_time: False
     robot_base_frame: ic120_0_tf/base_link
     odom_topic: /ic120_0/odom
-    # default_nav_through_poses_bt_xml: "/home/common/SIP_PROJECTS/M2/SIMIZU_PROJECT/ros2_ws/install/ic120_navigation/share/ic120_navigation/config/ic120_navigate_through_poses_w_replanning_and_recovery.xml"
-    default_nav_through_poses_bt_xml: "$(find-pkg-share ic120_navigation)/params/navigate_once.xml"
+    default_nav_to_pose_bt_xml: "/home/trans/programs/ros2_ws/install/ic120_navigation/share/ic120_navigation/params/navigate_once.xml"
+    default_nav_through_poses_bt_xml: "/home/trans/programs/ros2_ws/install/ic120_navigation/share/ic120_navigation/params/navigate_once.xml"
     bt_loop_duration: 10
     default_server_timeout: 20
     wait_for_service_timeout: 1000
