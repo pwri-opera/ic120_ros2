@@ -54,6 +54,7 @@ def rewrite_nav_params(context, **kwargs):
         'bt_navigator.ros__parameters.robot_base_frame': tf_prefix_val+'/base_link',
         'bt_navigator.ros__parameters.odom_topic': '/'+common_prefix_val+'/odom_pose',
         'bt_navigator.ros__parameters.default_nav_through_poses_bt_xml': os.path.join(ic120_navigation_dir, 'params', 'ic120_navigate_through_poses_w_replanning_and_recovery.xml'),
+        # 'bt_navigator.ros__parameters.default_nav_through_poses_bt_xml': os.path.join(ic120_navigation_dir, 'params', 'ic120_navigate_once.xml'),
 
         # controller_server
         'controller_server.ros__parameters.odom_topic': '/'+common_prefix_val+'/odom_pose',
@@ -313,7 +314,7 @@ def generate_launch_description():
     common_prefix = LaunchConfiguration('common_prefix')
     use_rviz = LaunchConfiguration('use_rviz')
     common_prefix_arg = DeclareLaunchArgument('common_prefix',default_value='ic120_0')
-    use_rviz_arg = DeclareLaunchArgument('use_rviz', default_value='true')
+    use_rviz_arg = DeclareLaunchArgument('use_rviz', default_value='false')
 
     return LaunchDescription([
         common_prefix_arg,

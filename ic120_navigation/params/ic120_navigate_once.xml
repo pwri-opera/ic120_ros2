@@ -1,0 +1,19 @@
+<root BTCPP_format="4" main_tree_to_execute="MainTree">
+  <BehaviorTree ID="MainTree">
+    <Sequence name="PlanOnceThenFollowThroughPoses">
+      <RemovePassedGoals input_goals="{goals}" output_goals="{goals}" radius="0.7"/>
+
+      <RecoveryNode number_of_retries="1" name="ComputePathThroughPoses_Once">
+        <ComputePathThroughPoses goals="{goals}" path="{path}" planner_id="GridBased"/>
+        <ClearEntireCostmap name="ClearGlobalCostmap"
+                            service_name="global_costmap/clear_entirely_global_costmap"/>
+      </RecoveryNode>
+
+      <RecoveryNode number_of_retries="3" name="FollowPath">
+        <FollowPath path="{path}" controller_id="FollowPath"/>
+        <ClearEntireCostmap name="ClearLocalCostmap"
+                            service_name="local_costmap/clear_entirely_local_costmap"/>
+      </RecoveryNode>
+    </Sequence>
+  </BehaviorTree>
+</root>
