@@ -148,7 +148,7 @@ controller_server:
       max_vel_theta: 0.3490658504
       min_speed_xy: 0.0
       max_speed_xy: 1.0
-      min_speed_theta: -0.3490658504
+      min_speed_theta: 0.3490658504
       acc_lim_x: 3.0 
       acc_lim_y: 0.0
       acc_lim_theta: 3.1

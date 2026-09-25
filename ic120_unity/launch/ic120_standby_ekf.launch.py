@@ -52,11 +52,13 @@ def rewrite_nav_params(context, **kwargs):
         
         # bt_navigator
         'bt_navigator.ros__parameters.robot_base_frame': tf_prefix_val+'/base_link',
-        'bt_navigator.ros__parameters.odom_topic': '/'+common_prefix_val+'/odom',
+        'bt_navigator.ros__parameters.odom_topic': '/'+common_prefix_val+'/odom_pose',
+        'bt_navigator.ros__parameters.default_nav_to_pose_bt_xml': os.path.join(ic120_navigation_dir, 'params', 'ic120_navigate_to_pose_w_replanning_and_recovery.xml'),
         'bt_navigator.ros__parameters.default_nav_through_poses_bt_xml': os.path.join(ic120_navigation_dir, 'params', 'ic120_navigate_through_poses_w_replanning_and_recovery.xml'),
+        # 'bt_navigator.ros__parameters.default_nav_through_poses_bt_xml': os.path.join(ic120_navigation_dir, 'params', 'ic120_navigate_once.xml'),
 
         # controller_server
-        'controller_server.ros__parameters.odom_topic': '/'+common_prefix_val+'/odom',
+        'controller_server.ros__parameters.odom_topic': '/'+common_prefix_val+'/odom_pose',
         'controller_server.ros__parameters.base_global_frame': tf_prefix_val+'/odom',
 
         # local costmap
@@ -67,12 +69,12 @@ def rewrite_nav_params(context, **kwargs):
         'global_costmap.global_costmap.ros__parameters.robot_base_frame': tf_prefix_val+'/base_link',
 
         # behavior server
-        'behavior_server.ros__parameters.local_frame': tf_prefix_val+'/odom',
-        'behavior_server.ros__parameters.local_costmap.global_frame': tf_prefix_val+'/odom',
+        # Humble uses global_frame for poses checked against the local costmap.
+        'behavior_server.ros__parameters.global_frame': tf_prefix_val+'/odom',
         'behavior_server.ros__parameters.robot_base_frame': tf_prefix_val+'/base_link',
 
         # velocity smoother
-        'velocity_smoother.odom_topic': '/'+common_prefix_val+'/odom',
+        'velocity_smoother.ros__parameters.odom_topic': '/'+common_prefix_val+'/odom_pose',
     }
     configured_params=RewrittenYaml(
         source_file=navigation_parameters_sim_yaml_file,
@@ -96,7 +98,7 @@ def rewrite_ekf_params(context, **kwargs):
 def process_xacro(context, *args, **kwargs):
     global params
     ic120_description_dir = get_package_share_directory("ic120_description")
-    ic120_xacro_file = os.path.join(ic120_description_dir, "urdf", "ic120.xacro")
+    ic120_xacro_file = os.path.join(ic120_description_dir, "urdf", "ic120_sim.xacro")
     with open(ic120_xacro_file, 'r') as file:
         filedata = file.read()
     filedata = filedata.replace('<xacro:property name="tf_prefix" value="ic120_tf"/>', f'<xacro:property name="tf_prefix" value="{tf_prefix_val}"/>')
@@ -127,7 +129,6 @@ def generate_nodes(context, *args, **kwargs):
         # 'collision_monitor',
         'bt_navigator',
         'waypoint_follower',
-        'velocity_smoother',
     ]    
     return [
         Node(
@@ -149,22 +150,23 @@ def generate_nodes(context, *args, **kwargs):
             namespace=common_prefix_val,
             name='odom_broadcaster',
             output="screen",
-            parameters=[{'odom_topic': '/'+common_prefix_val+'/odom'},
+            parameters=[{'odom_topic': '/'+common_prefix_val+'/odom_pose'},
                         {'odom_frame': tf_prefix_val+ "/odom"},
-                        {'base_link_frame': tf_prefix_val + "/base_link"}]
+                        {'base_link_frame': tf_prefix_val + "/base_link"},
+                        {'use_sim_time': use_sim_time}]
         ),
-        Node(
-            package='ic120_navigation',
-            executable='poseStamped2Odometry',
-            namespace=common_prefix_val,
-            name='poseStamped2ground_truth_odom',
-            output="screen",
-            parameters=[{'odom_header_frame': "world",
-                            'odom_child_frame': tf_prefix_val+"/base_link",
-                            'poseStamped_topic_name': '/'+common_prefix_val+"/base_link/pose",
-                            'odom_topic_name': '/'+common_prefix_val+"/tracking/ground_truth",
-                            'use_sim_time': use_sim_time}]
-        ),            
+        # Node(
+        #     package='ic120_navigation',
+        #     executable='poseStamped2Odometry',
+        #     namespace=common_prefix_val,
+        #     name='poseStamped2ground_truth_odom',
+        #     output="screen",
+        #     parameters=[{'odom_header_frame': "world",
+        #                     'odom_child_frame': tf_prefix_val+"/base_link",
+        #                     'poseStamped_topic_name': '/'+common_prefix_val+"/base_link/pose",
+        #                     'odom_topic_name': '/'+common_prefix_val+"/tracking/ground_truth",
+        #                     'use_sim_time': use_sim_time}]
+        # ),            
         Node(
             package='robot_state_publisher',
             executable='robot_state_publisher',
@@ -200,8 +202,8 @@ def generate_nodes(context, *args, **kwargs):
             name="ekf_global",
             output="screen",
             remappings=[('odometry/filtered', '/'+common_prefix_val+'/odometry/global'),
-                        ('odom0', '/'+common_prefix_val+'/odom'),
-                        ('odom1','/'+common_prefix_val+"/tracking/ground_truth")],
+                        ('odom0', '/'+common_prefix_val+'/odom_pose'),
+                        ('odom1','/'+common_prefix_val+"/global_pose")],
             parameters=[configured_ekf_params,
                         {'map_frame': "map",
                             'world_frame': "map",
@@ -257,7 +259,7 @@ def generate_nodes(context, *args, **kwargs):
             respawn=use_respawn,
             respawn_delay=2.0,
             parameters=[configured_params],
-            remappings=[('cmd_vel', 'tracks/cmd_vel')]),
+            remappings=[('cmd_vel', 'cmd_vel')]),
         Node(
             package='nav2_bt_navigator',
             executable='bt_navigator',
@@ -287,7 +289,7 @@ def generate_nodes(context, *args, **kwargs):
             respawn_delay=2.0,
             parameters=[configured_params],
             remappings=[('cmd_vel', 'cmd_vel_nav'), 
-                        ('cmd_vel_smoothed', 'tracks/cmd_vel')]),
+                        ('cmd_vel_smoothed', 'cmd_vel')]),
         Node(
             package='nav2_lifecycle_manager',
             executable='lifecycle_manager',
@@ -312,8 +314,8 @@ def generate_nodes(context, *args, **kwargs):
 def generate_launch_description():
     common_prefix = LaunchConfiguration('common_prefix')
     use_rviz = LaunchConfiguration('use_rviz')
-    common_prefix_arg = DeclareLaunchArgument('common_prefix',default_value='ic120')
-    use_rviz_arg = DeclareLaunchArgument('use_rviz', default_value='true')
+    common_prefix_arg = DeclareLaunchArgument('common_prefix',default_value='ic120_0')
+    use_rviz_arg = DeclareLaunchArgument('use_rviz', default_value='false')
 
     return LaunchDescription([
         common_prefix_arg,
