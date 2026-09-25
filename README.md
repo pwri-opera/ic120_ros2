@@ -56,6 +56,15 @@ OPERA対応クローラダンプIC120の土木研究所公開ROS2パッケージ
   ```bash
   $ ros2 launch ic120_unity ic120_standby_ekf.launch.py
   ```
+
+### Unity版IC120のナビゲーション設定
+
+`ic120_standby_ekf.launch.py` は、Unity側の旋回上限 **0.08726646 rad/s（5度/秒）** に合わせた設定を読み込みます。DWB・速度平滑化・Spin回復動作の上限を揃え、低速移動とその場旋回を許可しています。実機用の設定は変更していません。
+
+- ROS 2 Humbleでは `progress_checker_plugin`（単数形）で `PoseProgressChecker` を指定し、並進だけでなく旋回も進捗として判定します。
+- 回復動作の `global_frame` は、衝突判定に使うローカルコストマップと同じ `<common_prefix>_tf/odom` です。`map` 座標の姿勢をそのままローカルグリッドに照合しないようにします。
+- `NavigateToPose` 用のBTは `ic120_navigate_to_pose_w_replanning_and_recovery.xml` を使用します。90度のSpinは上限速度でも最低18秒必要なため、許容時間を45秒にしています。
+- Unity側の `/clock` とセンサーメッセージは同じ物理ステップの時刻で配信してください。TFの許容時間を広げて時刻のずれを隠す設定にはしていません。
  
 ### ハードウェアシステム
 ![ic120_hardware_system](https://user-images.githubusercontent.com/24404939/159679362-c82d3720-089a-47f1-9251-a02f9e8a7fd4.jpg)

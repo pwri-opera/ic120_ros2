@@ -53,6 +53,7 @@ def rewrite_nav_params(context, **kwargs):
         # bt_navigator
         'bt_navigator.ros__parameters.robot_base_frame': tf_prefix_val+'/base_link',
         'bt_navigator.ros__parameters.odom_topic': '/'+common_prefix_val+'/odom_pose',
+        'bt_navigator.ros__parameters.default_nav_to_pose_bt_xml': os.path.join(ic120_navigation_dir, 'params', 'ic120_navigate_to_pose_w_replanning_and_recovery.xml'),
         'bt_navigator.ros__parameters.default_nav_through_poses_bt_xml': os.path.join(ic120_navigation_dir, 'params', 'ic120_navigate_through_poses_w_replanning_and_recovery.xml'),
         # 'bt_navigator.ros__parameters.default_nav_through_poses_bt_xml': os.path.join(ic120_navigation_dir, 'params', 'ic120_navigate_once.xml'),
 
@@ -68,12 +69,12 @@ def rewrite_nav_params(context, **kwargs):
         'global_costmap.global_costmap.ros__parameters.robot_base_frame': tf_prefix_val+'/base_link',
 
         # behavior server
-        'behavior_server.ros__parameters.local_frame': tf_prefix_val+'/odom',
-        'behavior_server.ros__parameters.local_costmap.global_frame': tf_prefix_val+'/odom',
+        # Humble uses global_frame for poses checked against the local costmap.
+        'behavior_server.ros__parameters.global_frame': tf_prefix_val+'/odom',
         'behavior_server.ros__parameters.robot_base_frame': tf_prefix_val+'/base_link',
 
         # velocity smoother
-        'velocity_smoother.odom_topic': '/'+common_prefix_val+'/odom_pose',
+        'velocity_smoother.ros__parameters.odom_topic': '/'+common_prefix_val+'/odom_pose',
     }
     configured_params=RewrittenYaml(
         source_file=navigation_parameters_sim_yaml_file,
@@ -128,7 +129,6 @@ def generate_nodes(context, *args, **kwargs):
         # 'collision_monitor',
         'bt_navigator',
         'waypoint_follower',
-        'velocity_smoother',
     ]    
     return [
         Node(
@@ -152,7 +152,8 @@ def generate_nodes(context, *args, **kwargs):
             output="screen",
             parameters=[{'odom_topic': '/'+common_prefix_val+'/odom_pose'},
                         {'odom_frame': tf_prefix_val+ "/odom"},
-                        {'base_link_frame': tf_prefix_val + "/base_link"}]
+                        {'base_link_frame': tf_prefix_val + "/base_link"},
+                        {'use_sim_time': use_sim_time}]
         ),
         # Node(
         #     package='ic120_navigation',
