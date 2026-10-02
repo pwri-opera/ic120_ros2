@@ -11,7 +11,6 @@ Panels:
     Name: Selection
   - Class: rviz_common/Tool Properties
     Expanded:
-      - /2D Pose Estimate1
       - /2D Goal Pose1
       - /Publish Point1
     Name: Tool Properties
@@ -50,6 +49,21 @@ Visualization Manager:
       Reference Frame: <Fixed Frame>
       Value: true
     - Alpha: 1
+      Class: rviz_default_plugins/Map
+      Color Scheme: map
+      Draw Behind: true
+      Enabled: true
+      Name: Map Server
+      Topic:
+        Depth: 1
+        Durability Policy: Transient Local
+        Filter size: 10
+        History Policy: Keep Last
+        Reliability Policy: Reliable
+        Value: /ic120_0/map
+      Use Timestamp: false
+      Value: true
+    - Alpha: 1
       Class: rviz_default_plugins/RobotModel
       Collision Enabled: false
       Description File: ""
@@ -59,7 +73,7 @@ Visualization Manager:
         Durability Policy: Volatile
         History Policy: Keep Last
         Reliability Policy: Reliable
-        Value: /ic120/robot_description
+        Value: /ic120_0/robot_description
       Enabled: true
       Links:
         All Links Enabled: true
@@ -67,34 +81,34 @@ Visualization Manager:
         Expand Link Details: false
         Expand Tree: false
         Link Tree Style: Links in Alphabetic Order
-        ic120_tf/base_link:
+        ic120_0_tf/base_link:
           Alpha: 1
           Show Axes: false
           Show Trail: false
-        ic120_tf/body_link:
-          Alpha: 1
-          Show Axes: false
-          Show Trail: false
-          Value: true
-        ic120_tf/cylinder_head_link:
+        ic120_0_tf/body_link:
           Alpha: 1
           Show Axes: false
           Show Trail: false
           Value: true
-        ic120_tf/cylinder_rod_link:
+        ic120_0_tf/cylinder_head_link:
           Alpha: 1
           Show Axes: false
           Show Trail: false
           Value: true
-        ic120_tf/left_sprocket_link:
+        ic120_0_tf/cylinder_rod_link:
           Alpha: 1
           Show Axes: false
           Show Trail: false
-        ic120_tf/right_sprocket_link:
+          Value: true
+        ic120_0_tf/left_sprocket_link:
           Alpha: 1
           Show Axes: false
           Show Trail: false
-        ic120_tf/vessel_pin_link:
+        ic120_0_tf/right_sprocket_link:
+          Alpha: 1
+          Show Axes: false
+          Show Trail: false
+        ic120_0_tf/vessel_pin_link:
           Alpha: 1
           Show Axes: false
           Show Trail: false
@@ -144,7 +158,7 @@ Visualization Manager:
         Filter size: 10
         History Policy: Keep Last
         Reliability Policy: Reliable
-        Value: front/scan
+        Value: /ic120_0/scan
       Use Fixed Frame: true
       Use rainbow: true
       Value: true
@@ -174,7 +188,7 @@ Visualization Manager:
         Filter size: 10
         History Policy: Keep Last
         Reliability Policy: Reliable
-        Value: /ic120/local_plan
+        Value: /ic120_0/local_plan
       Value: true
     - Alpha: 1
       Buffer Length: 1
@@ -202,7 +216,7 @@ Visualization Manager:
         Filter size: 10
         History Policy: Keep Last
         Reliability Policy: Reliable
-        Value: /ic120/plan
+        Value: /ic120_0/plan
       Value: true
     - Alpha: 0.699999988079071
       Class: rviz_default_plugins/Map
@@ -216,13 +230,13 @@ Visualization Manager:
         Filter size: 10
         History Policy: Keep Last
         Reliability Policy: Reliable
-        Value: /ic120/local_costmap/costmap
+        Value: /ic120_0/local_costmap/costmap
       Update Topic:
         Depth: 5
         Durability Policy: Volatile
         History Policy: Keep Last
         Reliability Policy: Reliable
-        Value: /ic120/local_costmap/costmap_updates
+        Value: /ic120_0/local_costmap/costmap_updates
       Use Timestamp: false
       Value: true
     - Alpha: 1
@@ -243,7 +257,7 @@ Visualization Manager:
         Filter size: 10
         History Policy: Keep Last
         Reliability Policy: Reliable
-        Value: /ic120/goal_pose
+        Value: /ic120_0/goal_pose
       Value: true
     - Alpha: 1
       Class: rviz_default_plugins/Polygon
@@ -256,16 +270,16 @@ Visualization Manager:
         Filter size: 10
         History Policy: Keep Last
         Reliability Policy: Reliable
-        Value: /ic120/local_costmap/published_footprint
+        Value: /ic120_0/local_costmap/published_footprint
       Value: true
     - Class: rviz_default_plugins/TF
       Enabled: true
       Frame Timeout: 15
       Frames:
         All Enabled: false
-        ic120_tf/base_link:
+        ic120_0_tf/base_link:
           Value: true
-        ic120_tf/body_link:
+        ic120_0_tf/body_link:
           Value: true
         map:
           Value: true
@@ -282,26 +296,6 @@ Visualization Manager:
             {}
       Update Interval: 0
       Value: true
-    - Alpha: 1
-      Axes Length: 1
-      Axes Radius: 0.10000000149011612
-      Class: rviz_default_plugins/Pose
-      Color: 255; 25; 0
-      Enabled: true
-      Head Length: 0.30000001192092896
-      Head Radius: 0.10000000149011612
-      Name: Waypoint
-      Shaft Length: 1
-      Shaft Radius: 0.05000000074505806
-      Shape: Arrow
-      Topic:
-        Depth: 5
-        Durability Policy: Volatile
-        Filter size: 10
-        History Policy: Keep Last
-        Reliability Policy: Reliable
-        Value: /ic120/waypoint
-      Value: true
   Enabled: true
   Global Options:
     Background Color: 48; 48; 48
@@ -316,23 +310,13 @@ Visualization Manager:
     - Class: rviz_default_plugins/FocusCamera
     - Class: rviz_default_plugins/Measure
       Line color: 128; 128; 0
-    - Class: rviz_default_plugins/SetInitialPose
-      Covariance x: 0.25
-      Covariance y: 0.25
-      Covariance yaw: 0.06853891909122467
-      Topic:
-        Depth: 5
-        Durability Policy: Volatile
-        History Policy: Keep Last
-        Reliability Policy: Reliable
-        Value: initialpose
     - Class: rviz_default_plugins/SetGoal
       Topic:
         Depth: 5
         Durability Policy: Volatile
         History Policy: Keep Last
         Reliability Policy: Reliable
-        Value: /ic120/goal_pose
+        Value: /ic120_0/goal_pose
     - Class: rviz_default_plugins/PublishPoint
       Single click: true
       Topic:
@@ -340,7 +324,7 @@ Visualization Manager:
         Durability Policy: Volatile
         History Policy: Keep Last
         Reliability Policy: Reliable
-        Value: clicked_point
+        Value: /ic120_0/clicked_point
   Transformation:
     Current:
       Class: rviz_default_plugins/TF

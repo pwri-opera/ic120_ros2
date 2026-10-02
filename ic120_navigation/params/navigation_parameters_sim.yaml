@@ -50,6 +50,7 @@ bt_navigator:
     use_sim_time: False
     robot_base_frame: ic120_tf/base_link
     odom_topic: /ic120/odom
+    default_nav_to_pose_bt_xml: ""
     default_nav_through_poses_bt_xml: "/home/common/SIP_PROJECTS/M2/SIMIZU_PROJECT/ros2_ws/install/ic120_navigation/share/ic120_navigation/config/ic120_navigate_through_poses_w_replanning_and_recovery.xml"
     default_nav_through_poses_bt_xml: ""
     bt_loop_duration: 100
@@ -172,7 +173,7 @@ controller_server:
       min_vel_y: 0.0
       max_vel_x: 3.0
       max_vel_y: 0.0
-      max_vel_theta: 0.5
+      max_vel_theta: 3.0
       min_speed_xy: 0.0
       max_speed_xy: 3.0
       min_speed_theta: 0.0
@@ -313,8 +314,8 @@ behavior_server:
     robot_base_frame: ic120_tf/base_link
     transform_tolerance: 0.1
     simulate_ahead_time: 2.0
-    max_rotational_vel: 0.5
-    min_rotational_vel: 0.05
+    max_rotational_vel: 3.0
+    min_rotational_vel: -3.0
     rotational_acc_lim: 3.2
     use_sim_time: False
 
@@ -339,8 +340,8 @@ velocity_smoother:
     smoothing_frequency: 10.0
     scale_velocities: False
     feedback: "OPEN_LOOP"
-    max_velocity: [3.0, 0.0, 0.5]
-    min_velocity: [-3.0, 0.0, -0.5]
+    max_velocity: [3.0, 0.0, 1.5]
+    min_velocity: [-3.0, 0.0, -1.5]
     max_accel: [2.5, 0.0, 3.1]
     max_decel: [-2.5, 0.0, -3.2]
     odom_topic: /ic120/odom_pose
@@ -348,4 +349,3 @@ velocity_smoother:
     deadband_velocity: [0.0, 0.0, 0.0]
     velocity_timeout: 1.0
     use_sim_time: False
-
