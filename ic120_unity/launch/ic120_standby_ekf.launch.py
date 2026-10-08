@@ -48,17 +48,17 @@ def rewrite_nav_params(context, **kwargs):
         'amcl.ros__parameters.odom_frame_id': tf_prefix_val+'/odom',
 
         #component_container_isolated
-        'component_container\isolated.ros__parameters.autostart': str(use_autostart),
+        'component_container_isolated.ros__parameters.autostart': str(use_autostart),
         
         # bt_navigator
         'bt_navigator.ros__parameters.robot_base_frame': tf_prefix_val+'/base_link',
-        'bt_navigator.ros__parameters.odom_topic': '/'+common_prefix_val+'/odom_pose',
+        'bt_navigator.ros__parameters.odom_topic': '/'+common_prefix_val+'/odom_nav',
         'bt_navigator.ros__parameters.default_nav_to_pose_bt_xml': os.path.join(ic120_navigation_dir, 'params', 'ic120_navigate_to_pose_w_replanning_and_recovery.xml'),
         'bt_navigator.ros__parameters.default_nav_through_poses_bt_xml': os.path.join(ic120_navigation_dir, 'params', 'ic120_navigate_through_poses_w_replanning_and_recovery.xml'),
         # 'bt_navigator.ros__parameters.default_nav_through_poses_bt_xml': os.path.join(ic120_navigation_dir, 'params', 'ic120_navigate_once.xml'),
 
         # controller_server
-        'controller_server.ros__parameters.odom_topic': '/'+common_prefix_val+'/odom_pose',
+        'controller_server.ros__parameters.odom_topic': '/'+common_prefix_val+'/odom_nav',
         'controller_server.ros__parameters.base_global_frame': tf_prefix_val+'/odom',
 
         # local costmap
@@ -69,12 +69,11 @@ def rewrite_nav_params(context, **kwargs):
         'global_costmap.global_costmap.ros__parameters.robot_base_frame': tf_prefix_val+'/base_link',
 
         # behavior server
-        'behavior_server.ros__parameters.local_frame': tf_prefix_val+'/odom',
-        'behavior_server.ros__parameters.local_costmap.global_frame': tf_prefix_val+'/odom',
+        'behavior_server.ros__parameters.global_frame': tf_prefix_val+'/odom',
         'behavior_server.ros__parameters.robot_base_frame': tf_prefix_val+'/base_link',
 
         # velocity smoother
-        'velocity_smoother.odom_topic': '/'+common_prefix_val+'/odom_pose',
+        'velocity_smoother.ros__parameters.odom_topic': '/'+common_prefix_val+'/odom_nav',
     }
     configured_params=RewrittenYaml(
         source_file=navigation_parameters_sim_yaml_file,
@@ -152,8 +151,21 @@ def generate_nodes(context, *args, **kwargs):
             output="screen",
             parameters=[{'odom_topic': '/'+common_prefix_val+'/odom_pose'},
                         {'odom_frame': tf_prefix_val+ "/odom"},
-                        {'base_link_frame': tf_prefix_val + "/base_link"}]
+                        {'base_link_frame': tf_prefix_val + "/base_link"},
+                        {'use_sim_time': use_sim_time}]
         ),
+        Node(
+            package='ic120_navigation',
+            executable='pose_velocity_odometry',
+            namespace=common_prefix_val,
+            name='pose_velocity_odometry',
+            output='screen',
+            respawn=use_respawn,
+            respawn_delay=2.0,
+            parameters=[{'input_topic': '/'+common_prefix_val+'/odom_pose',
+                         'output_topic': '/'+common_prefix_val+'/odom_nav',
+                         'base_frame': tf_prefix_val+'/base_link',
+                         'use_sim_time': use_sim_time}]),
         # Node(
         #     package='ic120_navigation',
         #     executable='poseStamped2Odometry',
@@ -314,7 +326,7 @@ def generate_launch_description():
     common_prefix = LaunchConfiguration('common_prefix')
     use_rviz = LaunchConfiguration('use_rviz')
     common_prefix_arg = DeclareLaunchArgument('common_prefix',default_value='ic120_0')
-    use_rviz_arg = DeclareLaunchArgument('use_rviz', default_value='false')
+    use_rviz_arg = DeclareLaunchArgument('use_rviz', default_value='True')
 
     return LaunchDescription([
         common_prefix_arg,

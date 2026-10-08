@@ -34,6 +34,7 @@ setup(
         'console_scripts': [
             'poseStamped2Odometry = ic120_navigation.poseStamped2Odometry:main',
             'odom_broadcaster = ic120_navigation.odom_broadcaster:main',
+            'pose_velocity_odometry = ic120_navigation.pose_velocity_odometry:main',
             'map_generator = ic120_navigation.map_generator:main',
 
         ],

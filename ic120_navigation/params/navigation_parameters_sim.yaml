@@ -51,10 +51,9 @@ bt_navigator:
     robot_base_frame: ic120_tf/base_link
     odom_topic: /ic120/odom
     default_nav_to_pose_bt_xml: ""
-    default_nav_through_poses_bt_xml: "/home/common/SIP_PROJECTS/M2/SIMIZU_PROJECT/ros2_ws/install/ic120_navigation/share/ic120_navigation/config/ic120_navigate_through_poses_w_replanning_and_recovery.xml"
     default_nav_through_poses_bt_xml: ""
-    bt_loop_duration: 100
-    default_server_timeout: 20
+    bt_loop_duration: 20
+    default_server_timeout: 1000
     wait_for_service_timeout: 1000
     action_server_result_timeout: 900.0
     navigators: ["navigate_to_pose", "navigate_through_poses"]
@@ -143,7 +142,8 @@ controller_server:
     progress_checker:
       plugin: "nav2_controller::SimpleProgressChecker"
       required_movement_radius: 0.2
-      movement_time_allowance: 10.0
+      # SimpleProgressChecker counts translation only; allow initial turning.
+      movement_time_allowance: 30.0
     # Goal checker parameters
     #precise_goal_checker:
     #  plugin: "nav2_controller::SimpleGoalChecker"
@@ -151,7 +151,7 @@ controller_server:
     #  yaw_goal_tolerance: 0.25
     #  stateful: True
     general_goal_checker:
-      stateful: True
+      stateful: False
       plugin: "nav2_controller::SimpleGoalChecker"
       xy_goal_tolerance: 1.0
       yaw_goal_tolerance: 0.1
@@ -169,13 +169,14 @@ controller_server:
     FollowPath:
       plugin: "dwb_core::DWBLocalPlanner"
       debug_trajectory_details: false
-      min_vel_x: -3.0
+      # Conservative tracking speed until the combined changes are validated.
+      min_vel_x: -1.0
       min_vel_y: 0.0
-      max_vel_x: 3.0
+      max_vel_x: 1.0
       max_vel_y: 0.0
-      max_vel_theta: 3.0
+      max_vel_theta: 0.6
       min_speed_xy: 0.0
-      max_speed_xy: 3.0
+      max_speed_xy: 1.0
       min_speed_theta: 0.0
       acc_lim_x: 2.5
       acc_lim_y: 0.0
@@ -183,29 +184,37 @@ controller_server:
       decel_lim_x: -2.5
       decel_lim_y: 0.0
       decel_lim_theta: -3.2
-      vx_samples: 7
+      vx_samples: 11
       vy_samples: 1
-      vtheta_samples: 7
+      vtheta_samples: 13
       # sim_time: 30.0
       sim_time: 1.7
       linear_granularity: 0.1
       angular_granularity: 0.05
-      transform_tolerance: 0.2
+      transform_tolerance: 0.5
+      # Keep a wider local portion of the global path.
+      prune_distance: 5.0
+      forward_prune_distance: 5.0
       xy_goal_tolerance: 1.0
-      trans_stopped_velocity: 0.25
+      trans_stopped_velocity: 0.1
       short_circuit_trajectory_evaluation: True
       stateful: True
       critics: ["RotateToGoal", "Oscillation", "BaseObstacle", "GoalAlign", "PathAlign", "PathDist", "GoalDist"]
       BaseObstacle.scale: 0.02
       PathAlign.scale: 32.0
-      PathAlign.forward_point_distance: 0.1
+      PathAlign.forward_point_distance: 0.5
       GoalAlign.scale: 5.0
-      GoalAlign.forward_point_distance: 0.1
+      GoalAlign.forward_point_distance: 0.5
       PathDist.scale: 10.0
       GoalDist.scale: 24.0
       RotateToGoal.scale: 5.0
       RotateToGoal.slowing_factor: 8.0
       RotateToGoal.lookahead_time: -1.0
+      # Track turn reversals while driving as well as while rotating in place.
+      Oscillation.x_only_threshold: -1.0
+      Oscillation.oscillation_reset_dist: 0.2
+      Oscillation.oscillation_reset_angle: 0.4
+      publish_evaluation: True
 
 local_costmap:
   local_costmap:
@@ -274,7 +283,7 @@ map_saver:
     
 planner_server:
   ros__parameters:
-    expected_planner_frequency: 1.0
+    expected_planner_frequency: 0.2
     use_sim_time: False
     planner_plugins: ["GridBased"]
     GridBased:
@@ -314,8 +323,8 @@ behavior_server:
     robot_base_frame: ic120_tf/base_link
     transform_tolerance: 0.1
     simulate_ahead_time: 2.0
-    max_rotational_vel: 3.0
-    min_rotational_vel: -3.0
+    max_rotational_vel: 0.6
+    min_rotational_vel: 0.1
     rotational_acc_lim: 3.2
     use_sim_time: False
 
@@ -338,10 +347,10 @@ waypoint_follower:
 velocity_smoother:
   ros__parameters:
     smoothing_frequency: 10.0
-    scale_velocities: False
+    scale_velocities: True
     feedback: "OPEN_LOOP"
-    max_velocity: [3.0, 0.0, 1.5]
-    min_velocity: [-3.0, 0.0, -1.5]
+    max_velocity: [1.0, 0.0, 0.6]
+    min_velocity: [-1.0, 0.0, -0.6]
     max_accel: [2.5, 0.0, 3.1]
     max_decel: [-2.5, 0.0, -3.2]
     odom_topic: /ic120/odom_pose

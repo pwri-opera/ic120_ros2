@@ -1,22 +1,23 @@
 
 <!--
-  This Behavior Tree computes a path once before following it. If planning or
-  following the path fails, the recovery tree runs and navigation may be retried
-  with a new path.
+  Replan every five seconds while following the path. This keeps recovery from
+  being the only way to refresh a pruned path, without planning at every tick.
 -->
 <root main_tree_to_execute="MainTree">
   <BehaviorTree ID="MainTree">
     <RecoveryNode number_of_retries="6" name="NavigateRecovery">
-      <Sequence name="NavigateWithSinglePlan">
-        <RecoveryNode number_of_retries="1" name="ComputePathToPose">
-          <ComputePathToPose goal="{goal}" path="{path}" planner_id="GridBased"/>
-          <ClearEntireCostmap name="ClearGlobalCostmap-Context" service_name="global_costmap/clear_entirely_global_costmap"/>
-        </RecoveryNode>
+      <PipelineSequence name="NavigateWithReplanning">
+        <RateController hz="0.2">
+          <RecoveryNode number_of_retries="1" name="ComputePathToPose">
+            <ComputePathToPose goal="{goal}" path="{path}" planner_id="GridBased"/>
+            <ClearEntireCostmap name="ClearGlobalCostmap-Context" service_name="global_costmap/clear_entirely_global_costmap"/>
+          </RecoveryNode>
+        </RateController>
         <RecoveryNode number_of_retries="1" name="FollowPath">
-          <FollowPath path="{path}" controller_id="FollowPath"/>
+          <FollowPath path="{path}" controller_id="FollowPath" goal_checker_id="general_goal_checker"/>
           <ClearEntireCostmap name="ClearLocalCostmap-Context" service_name="local_costmap/clear_entirely_local_costmap"/>
         </RecoveryNode>
-      </Sequence>
+      </PipelineSequence>
       <ReactiveFallback name="RecoveryFallback">
         <GoalUpdated/>
         <RoundRobin name="RecoveryActions">

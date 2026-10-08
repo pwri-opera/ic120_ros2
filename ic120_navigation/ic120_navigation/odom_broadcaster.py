@@ -17,7 +17,7 @@ class OdomBroadcaster(Node):
         self.odom_topic = self.get_parameter('odom_topic').get_parameter_value().string_value
         self.odom_frame = self.get_parameter('odom_frame').get_parameter_value().string_value
         self.base_link_frame = self.get_parameter('base_link_frame').get_parameter_value().string_value
-        self.odom_sub = self.create_subscription(Odometry, self.odom_topic, self.odom_cb, 10)
+        self.odom_sub = self.create_subscription(Odometry, self.odom_topic, self.odom_cb, 1)
 
     def odom_cb(self, msg):
         # self.get_logger().info("odom_topic" + self.odom_topic)
