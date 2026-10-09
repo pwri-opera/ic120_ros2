@@ -4,6 +4,7 @@ from tf2_ros import TransformBroadcaster
 from nav_msgs.msg import Odometry
 from geometry_msgs.msg import TransformStamped
 from rclpy.node import Node
+from ic120_navigation.message_rate_limiter import StampRateLimiter
 
 
 class OdomBroadcaster(Node):
@@ -14,12 +15,17 @@ class OdomBroadcaster(Node):
         self.declare_parameter('odom_topic', "/ic120/odom")
         self.declare_parameter('odom_frame', "ic120_tf/odom")
         self.declare_parameter('base_link_frame', "ic120_tf/base_link")
+        self.declare_parameter('publish_frequency', 0.0)
+        self.rate_limiter = StampRateLimiter(self.get_parameter('publish_frequency').value)
         self.odom_topic = self.get_parameter('odom_topic').get_parameter_value().string_value
         self.odom_frame = self.get_parameter('odom_frame').get_parameter_value().string_value
         self.base_link_frame = self.get_parameter('base_link_frame').get_parameter_value().string_value
         self.odom_sub = self.create_subscription(Odometry, self.odom_topic, self.odom_cb, 1)
 
     def odom_cb(self, msg):
+        stamp = msg.header.stamp.sec + msg.header.stamp.nanosec * 1e-9
+        if not self.rate_limiter.allow(stamp):
+            return
         # self.get_logger().info("odom_topic" + self.odom_topic)
         # self.get_logger().info("odom_frame" + self.odom_frame)
         # self.get_logger().info("base_link_frame" + self.base_link_frame)
@@ -40,9 +46,14 @@ class OdomBroadcaster(Node):
 def main(args=None):
     rclpy.init(args=args)
     odom_broadcaster = OdomBroadcaster()
-    rclpy.spin(odom_broadcaster)
-    odom_broadcaster.destroy_node()
-    rclpy.shutdown()
+    try:
+        rclpy.spin(odom_broadcaster)
+    except KeyboardInterrupt:
+        pass
+    finally:
+        odom_broadcaster.destroy_node()
+        if rclpy.ok():
+            rclpy.shutdown()
 
 if __name__ == '__main__':
     main()

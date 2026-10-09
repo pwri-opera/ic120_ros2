@@ -6,6 +6,7 @@
   <description>TODO: Package description</description>
   <maintainer email="ws@todo.todo">ws</maintainer>
   <license>TODO: License declaration</license>
+  <exec_depend>rclcpp_components</exec_depend>
   <!-- <url type="website">http://wiki.ros.org/ic120_bringup</url> -->
   <!--author email="jane.doe@example.com">Jane Doe</author-->
 
