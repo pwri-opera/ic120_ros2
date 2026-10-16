@@ -131,7 +131,7 @@ controller_server:
     controller_frequency: 10.0
     min_x_velocity_threshold: 0.001
     min_y_velocity_threshold: 0.5
-    min_theta_velocity_threshold: 0.001
+    min_theta_velocity_threshold: 0.01
     failure_tolerance: 0.3
     progress_checker_plugins: ["progress_checker"]
     goal_checker_plugins: ["general_goal_checker"] # "precise_goal_checker"
@@ -162,11 +162,11 @@ controller_server:
       min_vel_y: 0.0
       max_vel_x: 3.0
       max_vel_y: 0.0
-      max_vel_theta: 1.0
+      max_vel_theta: 0.087
       min_speed_xy: -2.0
       max_speed_xy: 2.0
-      min_speed_theta: -1.0
-      max_speed_theta: 1.0
+      min_speed_theta: 0.02
+      max_speed_theta: 0.087
       acc_lim_x: 3.0 
       acc_lim_y: 0.0
       acc_lim_theta: 3.1
