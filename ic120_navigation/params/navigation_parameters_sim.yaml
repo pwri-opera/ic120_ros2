@@ -162,24 +162,24 @@ controller_server:
       min_vel_y: 0.0
       max_vel_x: 3.0
       max_vel_y: 0.0
-      max_vel_theta: 0.087
+      max_vel_theta: 0.06
       min_speed_xy: -2.0
       max_speed_xy: 2.0
       min_speed_theta: 0.02
-      max_speed_theta: 0.087
+      max_speed_theta: 0.06
       acc_lim_x: 3.0 
       acc_lim_y: 0.0
-      acc_lim_theta: 3.1
+      acc_lim_theta: 0.6
       decel_lim_x: -2.5
       decel_lim_y: 0.0
-      decel_lim_theta: -3.2
+      decel_lim_theta: -0.6
       vx_samples: 25
       vy_samples: 5
-      vtheta_samples: 25
+      vtheta_samples: 20
       # sim_time: 30.0
       sim_time: 1.7
       linear_granularity: 0.05
-      angular_granularity: 0.025
+      angular_granularity: 0.02
       transform_tolerance: 0.2
       xy_goal_tolerance: 0.25
       trans_stopped_velocity: 0.25
@@ -407,10 +407,10 @@ velocity_smoother:
     smoothing_frequency: 10.0
     scale_velocities: False
     feedback: "OPEN_LOOP"
-    max_velocity: [1.0, 0.0, 3.0]
-    min_velocity: [-1.0, 0.0, -3.0]
-    max_accel: [2.5, 0.0, 3.2]
-    max_decel: [-2.5, 0.0, -3.2]
+    max_velocity: [1.0, 0.0, 0.06]
+    min_velocity: [-1.0, 0.0, -0.06]
+    max_accel: [2.5, 0.0, 0.5]
+    max_decel: [-2.5, 0.0, -0.5]
     odom_topic: /ic120/odom
     odom_duration: 0.1
     deadband_velocity: [0.0, 0.0, 0.0]
